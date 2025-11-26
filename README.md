@@ -1,4 +1,6 @@
 # Finals-Smart-Library-Management-System
+#MEMBERS: Dominic Ocarol, Julia Kong 
+
 Subject: Object-Oriented Programming (OOP)
 Language: C#
 Semester: 1ST semester
