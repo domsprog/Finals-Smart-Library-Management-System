@@ -1,37 +1,63 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿//using Microsoft.AspNetCore.Mvc;
+//using Smart_Library_Management_System_api.SmartLibrary.Services;
+
+//namespace Smart_Library_Management_System_api.SmartLibrary.Controllers
+//{
+//    [Route("api/[controller]")]
+//    [ApiController]
+//    public class UserController : ControllerBase
+//    {
+//        private readonly UserService userServices;
+
+//        public UserController(UserService userServices)
+//        {
+//            userServices = userServices;
+//        }
+
+//        [HttpGet]
+//        public async Task<IActionResult> GetUsers()
+//        {
+//            return Ok(await userServices.GetAllUsers());
+//        }
+
+//        [HttpGet("{id}")]
+//        public async Task<IActionResult> GetUser(string id)
+//        {
+//            var user = await userServices.GetUserById(id);
+//            if (user == null) return NotFound();
+//            return Ok(user);
+//        }
+//    }
+//}
+using Microsoft.AspNetCore.Mvc;
 using Smart_Library_Management_System_api.SmartLibrary.Services.Interface;
 
-namespace Smart_Library_Management_System_api.Controllers
+namespace Smart_Library_Management_System_api.SmartLibrary.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("mvc/api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
+        // FIXED: Changed to use interface instead of concrete class
         private readonly IUserService _userService;
-        public UsersController(IUserService userService)
+
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> Get(string userId)
-        {
-            var user = await _userService.GetUserByIdAsync(userId);
-            return user == null ? NotFound() : Ok(user);
-        }
-
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetUsers()
         {
-            var list = await _userService.GetAllUsersAsync();
-            return Ok(list);
+            return Ok(await _userService.GetAllUsers());
         }
 
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete(string userId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUser(string id)
         {
-            var deleted = await _userService.DeleteUserAsync(userId);
-            return deleted ? NoContent() : NotFound();
+            var user = await _userService.GetUserById(id);
+            if (user == null) return NotFound();
+            return Ok(user);
         }
     }
 }

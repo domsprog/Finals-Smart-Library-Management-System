@@ -12,8 +12,8 @@ using Smart_Library_Management_System_api.SmartLibrary.Data;
 namespace Smart_Library_Management_System_api.Migrations
 {
     [DbContext(typeof(DbContextLibrary))]
-    [Migration("20251125111723_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20251128073446_update")]
+    partial class update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,10 +82,21 @@ namespace Smart_Library_Management_System_api.Migrations
 
             modelBuilder.Entity("Smart_Library_Management_System_api.SmartLibrary.Entities.Catalog", b =>
                 {
-                    b.Property<string>("CatalogId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.PrimitiveCollection<string>("BookISBNs")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CatalogId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -97,7 +108,7 @@ namespace Smart_Library_Management_System_api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CatalogId");
+                    b.HasKey("Id");
 
                     b.ToTable("Catalogs");
                 });
@@ -115,6 +126,9 @@ namespace Smart_Library_Management_System_api.Migrations
 
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssuedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LoanId")
                         .IsRequired()
@@ -185,6 +199,9 @@ namespace Smart_Library_Management_System_api.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("ReservationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReservedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")

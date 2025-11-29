@@ -1,56 +1,102 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Dto;
-using Smart_Library_Management_System_api.SmartLibrary.Entities;
+﻿using Smart_Library_Management_System_api.SmartLibrary.Entities;
 using Smart_Library_Management_System_api.SmartLibrary.Repository.Interface;
-using Smart_Library_Management_System_api.SmartLibrary.Services.Interface;
+using SmartLibrary.DTOs.FacultyDTOs;
+using SmartLibrary.Services.Interfaces;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Implementation
+namespace SmartLibrary.Services.FacultyService
 {
     public class FacultyService : IFacultyService
     {
-        private readonly IUserRepository _userRepo;
-        public FacultyService(IUserRepository userRepo)
+        private readonly IFacultyRepository _facultyRepo;
+        public FacultyService(IFacultyRepository facultyRepo) => _facultyRepo = facultyRepo;
+
+        public async Task<FacultyResponseDTO> CreateFacultyAsync(CreateFacultyDTO dto)
         {
-            _userRepo = userRepo;
-        }
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            var userId = string.IsNullOrWhiteSpace(dto.UserId) ? Guid.NewGuid().ToString() : dto.UserId;
 
-        public async Task<Faculty> CreateFacultyAsync(CreateFacultyRequest request)
-        {
-            var userId = Guid.NewGuid().ToString();
+            var faculty = new Faculty(userId, dto.Name, dto.Email, dto.FacultyId, dto.Department, dto.Position);
+            await _facultyRepo.AddFaculty(faculty);
 
-            var faculty = new Faculty(userId, request.Name, request.Email, request.FacultyId, request.Department, request.Position);
-
-            await _userRepo.AddFaculty(faculty);
-            return faculty;
-        }
-
-        public async Task<Faculty> GetFacultyByIdAsync(string userId)
-        {
-            return await _userRepo.GetFacultyById(userId);
-        }
-
-        public async Task<List<Faculty>> GetAllFacultyAsync()
-        {
-            return await _userRepo.GetAllFaculty();
-        }
-
-        public async Task<Faculty> UpdateFacultyAsync(string userId, UpdateUserRequest request)
-        {
-            var existing = await _userRepo.GetFacultyById(userId);
-            if (existing == null) return null;
-
-            if (!string.IsNullOrWhiteSpace(request.Name)) existing.Name = request.Name;
-            if (!string.IsNullOrWhiteSpace(request.Email)) existing.Email = request.Email;
-
-            await _userRepo.UpdateFaculty(existing);
-            return existing;
+            return new FacultyResponseDTO
+            {
+                UserId = faculty.UserId,
+                FacultyId = faculty.FacultyId,
+                Name = faculty.Name,
+                Email = faculty.Email,
+                Department = faculty.Department,
+                Position = faculty.Position,
+            };
         }
 
         public async Task<bool> DeleteFacultyAsync(string userId)
         {
-            var existing = await _userRepo.GetFacultyById(userId);
+            if (string.IsNullOrWhiteSpace(userId)) return false;
+            var existing = await _facultyRepo.GetFacultyById(userId);
             if (existing == null) return false;
-            await _userRepo.DeleteFaculty(userId);
+            await _facultyRepo.DeleteFaculty(userId);
             return true;
+        }
+
+        public async Task<IEnumerable<FacultyResponseDTO>> GetAllFacultyAsync()
+        {
+            var list = await _facultyRepo.GetAllFaculty();
+            return list.Select(f => new FacultyResponseDTO
+            {
+                UserId = f.UserId,
+                FacultyId = f.FacultyId,
+                Name = f.Name,
+                Email = f.Email,
+                Department = f.Department,
+                Position = f.Position,
+            });
+        }
+
+        public async Task<FacultyResponseDTO> GetFacultyByIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId)) return null;
+            var f = await _facultyRepo.GetFacultyById(userId);
+            if (f == null) return null;
+            return new FacultyResponseDTO
+            {
+                UserId = f.UserId,
+                FacultyId = f.FacultyId,
+                Name = f.Name,
+                Email = f.Email,
+                Department = f.Department,
+                Position = f.Position,
+            };
+        }
+
+        public async Task<FacultyResponseDTO> UpdateFacultyAsync(string userId, UpdateFacultyDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("userId required");
+            var f = await _facultyRepo.GetFacultyById(userId);
+            if (f == null) return null;
+
+            if (!string.IsNullOrWhiteSpace(dto.Name))
+                f.Name = dto.Name;
+
+            if (!string.IsNullOrWhiteSpace(dto.Email)) // ADDED
+                f.Email = dto.Email;
+
+            if (!string.IsNullOrWhiteSpace(dto.Department))
+                f.Department = dto.Department;
+
+            if (!string.IsNullOrWhiteSpace(dto.Position))
+                f.Position = dto.Position;
+
+            await _facultyRepo.UpdateFaculty(f);
+
+            return new FacultyResponseDTO
+            {
+                UserId = f.UserId,
+                FacultyId = f.FacultyId,
+                Name = f.Name,
+                Email = f.Email,
+                Department = f.Department,
+                Position = f.Position,
+            };
         }
     }
 }

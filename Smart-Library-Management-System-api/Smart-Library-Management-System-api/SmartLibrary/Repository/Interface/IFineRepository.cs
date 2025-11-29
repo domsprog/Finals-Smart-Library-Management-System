@@ -4,26 +4,20 @@ namespace Smart_Library_Management_System_api.SmartLibrary.Repository.Interface
 {
     public interface IFineRepository
     {
-        // Get fine by ID
         Task<Fine> GetFineById(string fineId);
-
-        // Get all fines for a user
-        Task<List<Fine>> GetFinesByUserId(string userId);
-
-        // Get unpaid fines for a user
-        Task<List<Fine>> GetUnpaidFines(string userId);
-
-        // Add a new fine
-        Task AddFine(Fine fine);
-
-        // Update existing fine
+        Task<List<Fine>> GetFinesByUser(string userId);
+        Task<Fine> AddFine(Fine fine);
         Task UpdateFine(Fine fine);
 
-        // Mark fine as paid
-        Task MarkFineAsPaid(string fineId);
+        // CS0539 FIX #1 - Add this method to interface
+        Task<Fine> GetFineByLoan(string loanId);
 
-        // Calculate total unpaid amount for a user
-        Task<decimal> GetTotalUnpaidAmount(string userId);
+        Task<bool> PayFine(string fineId);
+
+        // CS0539 FIX #2 - Add this method to interface  
+        Task<decimal> CalculateFine(Fine fine);
+
+        // Also add this method that's used by FineService
+        Task<List<Fine>> GetAllFines();
     }
-
 }

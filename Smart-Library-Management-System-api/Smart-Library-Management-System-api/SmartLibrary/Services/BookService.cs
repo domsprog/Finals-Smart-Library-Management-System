@@ -1,91 +1,187 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Dto; 
-using Smart_Library_Management_System_api.SmartLibrary.Entities;
+﻿using Smart_Library_Management_System_api.SmartLibrary.Entities;
 using Smart_Library_Management_System_api.SmartLibrary.Repository.Interface;
-using Smart_Library_Management_System_api.SmartLibrary.Services.Interface;
+using SmartLibrary.DTOs.BookDTOs;
+using SmartLibrary.Services.Interfaces;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Implementation
+namespace SmartLibrary.Services.BookService
 {
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepo;
 
-        public BookService(IBookRepository bookRepo)
-        {
-            _bookRepo = bookRepo;
-        }
+        public BookService(IBookRepository bookRepo) => _bookRepo = bookRepo;
 
-        public async Task<Book> CreateBook(CreateBookRequest request)
+        public async Task<BookResponseDTO> CreateBook(CreateBookDTO dto)
         {
-            // validation (entity does its own validation for required fields)
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            if (string.IsNullOrWhiteSpace(dto.ISBN))
+                throw new ArgumentException("ISBN is required", nameof(dto.ISBN));
+
+            var existing = await _bookRepo.GetBookByISBN(dto.ISBN);
+            if (existing != null)
+                throw new InvalidOperationException($"Book with ISBN '{dto.ISBN}' already exists");
+
             var book = new Book
             {
-                ISBN = request.ISBN,
-                Title = request.Title,
-                Author = request.Author,
-                Publisher = request.Publisher,
-                PublicationYear = request.PublicationYear,
-                Category = request.Category,
-                Price = request.Price,
-                TotalCopies = request.TotalCopies,
-                AvailableCopies = request.TotalCopies
+                ISBN = dto.ISBN,
+                Title = dto.Title,
+                Author = dto.Author,
+                Category = dto.Category ?? "Uncategorized",
+                Publisher = dto.Publisher,
+                PublicationYear = dto.PublicationYear,
+                Price = dto.Price, 
+                TotalCopies = dto.TotalCopies, 
+                AvailableCopies = dto.AvailableCopies 
             };
 
             await _bookRepo.AddBook(book);
-            return book;
+
+            return new BookResponseDTO
+            {
+                ISBN = book.ISBN,
+                Title = book.Title,
+                Author = book.Author,
+                Publisher = book.Publisher, 
+                PublicationYear = book.PublicationYear, 
+                Category = book.Category,
+                Price = book.Price, 
+                TotalCopies = book.TotalCopies, 
+                AvailableCopies = book.AvailableCopies, 
+                IsAvailable = book.IsAvailable 
+            };
         }
 
         public async Task<bool> DeleteBook(string isbn)
         {
+            if (string.IsNullOrWhiteSpace(isbn))
+                throw new ArgumentException("ISBN is required", nameof(isbn));
+
             var existing = await _bookRepo.GetBookByISBN(isbn);
-            if (existing == null) return false;
+            if (existing == null)
+                return false;
 
             await _bookRepo.DeleteBook(isbn);
             return true;
         }
 
-        public async Task<List<Book>> GetAllBooks()
+        public async Task<IEnumerable<BookResponseDTO>> GetAllBooks()
         {
-            return await _bookRepo.GetAllBooks();
-        }
+            var books = await _bookRepo.GetAllBooks();
 
-        public async Task<Book> GetBookByISBN(string isbn)
-        {
-            return await _bookRepo.GetBookByISBN(isbn);
-        }
-
-        public async Task<List<Book>> SearchBooks(string keyword)
-        {
-            return await _bookRepo.SearchBooks(keyword);
-        }
-
-        public async Task<Book> UpdateBook(string isbn, UpdateBookRequest request)
-        {
-            var book = await _bookRepo.GetBookByISBN(isbn);
-            if (book == null) return null;
-            // Apply updates only for non-null values (DTO may use nullable types)
-            book.Title = string.IsNullOrWhiteSpace(request.Title) ? book.Title : request.Title;
-            book.Author = string.IsNullOrWhiteSpace(request.Author) ? book.Author : request.Author;
-            book.Publisher = string.IsNullOrWhiteSpace(request.Publisher) ? book.Publisher : request.Publisher;
-            book.Category = string.IsNullOrWhiteSpace(request.Category) ? book.Category : request.Category;
-            if (request.PublicationYear.HasValue)
-                book.PublicationYear = request.PublicationYear.Value;
-            if (request.Price.HasValue && request.Price.Value >= 0)
-                book.Price = request.Price.Value;
-            if (request.TotalCopies.HasValue)
+            return books.Select(b => new BookResponseDTO
             {
-                var oldTotal = book.TotalCopies;
-                var newTotal = request.TotalCopies.Value;
-                // Adjust available copies relative to change in total copies
-                var delta = newTotal - oldTotal;
-                book.TotalCopies = newTotal;
-                book.AvailableCopies = Math.Max(0, book.AvailableCopies + delta);
-            }
-            if (request.AvailableCopies.HasValue)
-                book.AvailableCopies = request.AvailableCopies.Value;
-            // Ensure AvailableCopies is valid: non-negative and <= TotalCopies
-            book.AvailableCopies = Math.Max(0, Math.Min(book.AvailableCopies, book.TotalCopies));
+                ISBN = b.ISBN,
+                Title = b.Title,
+                Author = b.Author,
+                Publisher = b.Publisher, 
+                PublicationYear = b.PublicationYear, 
+                Category = b.Category,
+                Price = b.Price, 
+                TotalCopies = b.TotalCopies, 
+                AvailableCopies = b.AvailableCopies, 
+                IsAvailable = b.IsAvailable 
+            });
+        }
+
+        public async Task<BookResponseDTO> GetBookByISBN(string isbn)
+        {
+            if (string.IsNullOrWhiteSpace(isbn))
+                throw new ArgumentException("ISBN is required", nameof(isbn));
+
+            var book = await _bookRepo.GetBookByISBN(isbn);
+            if (book == null)
+                return null;
+
+            return new BookResponseDTO
+            {
+                ISBN = book.ISBN,
+                Title = book.Title,
+                Author = book.Author,
+                Publisher = book.Publisher, 
+                PublicationYear = book.PublicationYear, 
+                Category = book.Category,
+                Price = book.Price, 
+                TotalCopies = book.TotalCopies, 
+                AvailableCopies = book.AvailableCopies, 
+                IsAvailable = book.IsAvailable 
+            };
+        }
+
+        public async Task<BookResponseDTO> UpdateBook(string isbn, UpdateBookDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(isbn))
+                throw new ArgumentException("ISBN is required", nameof(isbn));
+
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            var book = await _bookRepo.GetBookByISBN(isbn);
+            if (book == null)
+                return null;
+
+           
+            if (!string.IsNullOrWhiteSpace(dto.Title))
+                book.Title = dto.Title;
+
+            if (!string.IsNullOrWhiteSpace(dto.Author))
+                book.Author = dto.Author;
+
+            if (!string.IsNullOrWhiteSpace(dto.Publisher))
+                book.Publisher = dto.Publisher;
+
+            if (!string.IsNullOrWhiteSpace(dto.Category))
+                book.Category = dto.Category;
+
+            if (dto.Price > 0)
+                book.Price = dto.Price;
+
+            if (dto.TotalCopies >= 0) 
+                book.TotalCopies = dto.TotalCopies;
+
+            if (dto.AvailableCopies >= 0) 
+                book.AvailableCopies = dto.AvailableCopies;
+
             await _bookRepo.UpdateBook(book);
-            return book;
+
+            return new BookResponseDTO
+            {
+                ISBN = book.ISBN,
+                Title = book.Title,
+                Author = book.Author,
+                Publisher = book.Publisher,
+                PublicationYear = book.PublicationYear,
+                Category = book.Category,
+                Price = book.Price,
+                TotalCopies = book.TotalCopies,
+                AvailableCopies = book.AvailableCopies,
+                IsAvailable = book.IsAvailable
+            };
+        }
+
+       
+        public async Task<IEnumerable<BookResponseDTO>> SearchBooks(string searchTerm)
+        {
+            var books = await _bookRepo.SearchBooks(searchTerm);
+            return books.Select(b => new BookResponseDTO
+            {
+                ISBN = b.ISBN,
+                Title = b.Title,
+                Author = b.Author,
+                Publisher = b.Publisher,
+                PublicationYear = b.PublicationYear,
+                Category = b.Category,
+                Price = b.Price,
+                TotalCopies = b.TotalCopies,
+                AvailableCopies = b.AvailableCopies,
+                IsAvailable = b.IsAvailable
+            });
+        }
+
+        public async Task<bool> IsBookAvailable(string isbn)
+        {
+            return await _bookRepo.IsBookAvailable(isbn);
         }
     }
 }

@@ -1,14 +1,13 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Entities;
-using Smart_Library_Management_System_api.SmartLibrary.Dto;
+﻿using SmartLibrary.DTOs.FacultyDTOs;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Interface
+namespace SmartLibrary.Services.Interfaces
 {
     public interface IFacultyService
     {
-        Task<Faculty> CreateFacultyAsync(CreateFacultyRequest request);
-        Task<Faculty> GetFacultyByIdAsync(string userId);
-        Task<List<Faculty>> GetAllFacultyAsync();
-        Task<Faculty> UpdateFacultyAsync(string userId, UpdateUserRequest request);
+        Task<FacultyResponseDTO> CreateFacultyAsync(CreateFacultyDTO dto);
+        Task<FacultyResponseDTO> UpdateFacultyAsync(string userId, UpdateFacultyDTO dto);
         Task<bool> DeleteFacultyAsync(string userId);
+        Task<FacultyResponseDTO> GetFacultyByIdAsync(string userId);
+        Task<IEnumerable<FacultyResponseDTO>> GetAllFacultyAsync();
     }
 }

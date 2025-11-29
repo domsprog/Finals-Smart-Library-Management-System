@@ -1,4 +1,6 @@
-﻿namespace Smart_Library_Management_System_api.SmartLibrary.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Smart_Library_Management_System_api.SmartLibrary.Entities
 {
     public abstract class User
     {
@@ -6,6 +8,7 @@
         private string _name;
         private string _email;
 
+        [Key]
         public string UserId
         {
             get => _userId;
@@ -23,7 +26,7 @@
             get => _email;
             set
             {
-                if (!value.Contains("@"))
+                if (string.IsNullOrWhiteSpace(value) || !value.Contains("@"))
                     throw new ArgumentException("Invalid email format");
                 _email = value;
             }
@@ -40,6 +43,12 @@
             UserId = userId;
             Name = name;
             Email = email;
+            RegisteredDate = DateTime.Now;
+        }
+
+      
+        protected User()
+        {
             RegisteredDate = DateTime.Now;
         }
     }

@@ -1,75 +1,75 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Entities;
-using Smart_Library_Management_System_api.SmartLibrary.Repository.Interface;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Smart_Library_Management_System_api.SmartLibrary.Data;
+using Smart_Library_Management_System_api.SmartLibrary.Entities;
+using Smart_Library_Management_System_api.SmartLibrary.Repository.Interface;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Repository
+namespace Smart_Library_Management_System_api.SmartLibrary.Repository.Implementation
 {
     public class BookRepository : IBookRepository
     {
-        private readonly DbContextLibrary _context;
+        private readonly DbContextLibrary _ctx;
 
-        //Constructor Injection of the DbContext
-        public BookRepository(DbContextLibrary context)
-        {
-            _context = context;
-        }
-        // Get a single book by ISBN
-        public async Task<Book> GetBookByISBN(string isbn)
-        {
-            return await _context.Books.FindAsync(isbn);
-        }
-        // Get all books
-        public async Task<List<Book>> GetAllBooks()
-        {
-            return await _context.Books.ToListAsync();
-        }
+        public BookRepository(DbContextLibrary ctx) => _ctx = ctx;
 
-        // Search books by title or author
-        public async Task<List<Book>> SearchBooks(string searchTerm)
-        {
-            return await _context.Books
-                .Where(b => b.Title.Contains(searchTerm) || b.Author.Contains(searchTerm))
-                .ToListAsync();
-        }
-
-        // Add a new book
         public async Task AddBook(Book book)
         {
-            await _context.Books.AddAsync(book);
-            await _context.SaveChangesAsync();
+            if (book == null)
+                throw new ArgumentNullException(nameof(book));
+
+            await _ctx.Books.AddAsync(book);
+            await _ctx.SaveChangesAsync();
         }
 
-        // Update existing book
-        public async Task UpdateBook(Book book)
-        {
-            _context.Books.Update(book);
-            await _context.SaveChangesAsync();
-        }
-
-        // Delete a book
         public async Task DeleteBook(string isbn)
         {
+            if (string.IsNullOrWhiteSpace(isbn))
+                throw new ArgumentException("ISBN is required", nameof(isbn));
+
             var book = await GetBookByISBN(isbn);
-            if (book != null)
-            {
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
-            }
+            if (book == null) return;
+
+            _ctx.Books.Remove(book);
+            await _ctx.SaveChangesAsync();
         }
 
-        // Check if book is available
+        public async Task<List<Book>> GetAllBooks() =>
+            await _ctx.Books.AsNoTracking().ToListAsync();
+
+        public async Task<Book> GetBookByISBN(string isbn)
+        {
+            if (string.IsNullOrWhiteSpace(isbn))
+                return null;
+
+            return await _ctx.Books.FirstOrDefaultAsync(b => b.ISBN == isbn);
+        }
+
+        public async Task<List<Book>> SearchBooks(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return new List<Book>();
+
+            return await _ctx.Books
+                .Where(b => b.Title.Contains(term) || b.Author.Contains(term))
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task UpdateBook(Book book)
+        {
+            if (book == null)
+                throw new ArgumentNullException(nameof(book));
+
+            _ctx.Books.Update(book);
+            await _ctx.SaveChangesAsync();
+        }
+
         public async Task<bool> IsBookAvailable(string isbn)
         {
+            if (string.IsNullOrWhiteSpace(isbn))
+                return false;
+
             var book = await GetBookByISBN(isbn);
-            return book != null; // Simplified availability check
-        }
-        // Get books by author
-        public async Task<List<Book>> GetBooksByAuthor(string author)
-        {
-            return await _context.Books
-                .Where(b => b.Author == author)
-                .ToListAsync();
+            return book != null && book.AvailableCopies > 0;
         }
     }
 }

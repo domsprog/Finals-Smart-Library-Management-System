@@ -1,12 +1,14 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Entities;
-using Smart_Library_Management_System_api.SmartLibrary.Dto;
+﻿using SmartLibrary.DTOs.ReservationDTOs;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Interface
+namespace SmartLibrary.Services.Interfaces
 {
     public interface IReservationService
     {
-        Task<Reservation> CreateReservation(CreateReservationRequest request);
-        Task<bool> CancelReservation(int reservationId);
-        Task<List<Reservation>> GetUserReservations(int userId);
+        Task<ReservationResponseDTO> CreateReservationAsync(CreateReservationDTO dto);
+        Task<ReservationResponseDTO> GetReservationByIdAsync(string reservationId);
+        Task<IEnumerable<ReservationResponseDTO>> GetReservationsByUserAsync(string userId);
+        Task<IEnumerable<ReservationResponseDTO>> GetActiveReservationsAsync();
+        Task<bool> CancelReservationAsync(string reservationId);
+        Task<bool> FulfillReservationAsync(string reservationId);
     }
 }

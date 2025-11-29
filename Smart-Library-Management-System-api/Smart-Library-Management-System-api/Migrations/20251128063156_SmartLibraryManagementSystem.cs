@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Smart_Library_Management_System_api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class SmartLibraryManagementSystem : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,14 +34,17 @@ namespace Smart_Library_Management_System_api.Migrations
                 name: "Catalogs",
                 columns: table => new
                 {
-                    CatalogId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CatalogId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BookISBNs = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Catalogs", x => x.CatalogId);
+                    table.PrimaryKey("PK_Catalogs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,7 +58,8 @@ namespace Smart_Library_Management_System_api.Migrations
                     IsPaid = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PaidDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IssuedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -89,7 +93,8 @@ namespace Smart_Library_Management_System_api.Migrations
                     ReservationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    IsFulfilled = table.Column<bool>(type: "bit", nullable: false)
+                    IsFulfilled = table.Column<bool>(type: "bit", nullable: false),
+                    ReservedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -119,7 +124,7 @@ namespace Smart_Library_Management_System_api.Migrations
             migrationBuilder.InsertData(
                 table: "Books",
                 columns: new[] { "ISBN", "Author", "AvailableCopies", "Category", "Price", "PublicationYear", "Publisher", "Title", "TotalCopies" },
-                values: new object[] { "978-0134685991", "Dominic Alilin", 5, "Programming", 1299.00m, 2018, "Julia Kong", "Effective of Java-rice", 5 });
+                values: new object[] { "978-0134685991", "Dominic Alilin", 5, "Programming", 1299.00m, 0, "Julia Kong", "Effective of Java-rice", 5 });
         }
 
         /// <inheritdoc />
