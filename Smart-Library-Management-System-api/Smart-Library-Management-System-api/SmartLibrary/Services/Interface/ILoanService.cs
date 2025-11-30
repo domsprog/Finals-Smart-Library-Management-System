@@ -1,12 +1,14 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Dto;
-using Smart_Library_Management_System_api.SmartLibrary.Entities;
+﻿using SmartLibrary.DTOs.LoanDTOs;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Interface
+namespace SmartLibrary.Services.Interfaces
 {
     public interface ILoanService
     {
-        Task<Loan> BorrowBook(BorrowBookRequest request);
-        Task<Loan> ReturnBook(int loanId);
-        Task<List<Loan>> GetUserLoans(int userId);
+        Task<LoanResponseDTO> BorrowBookAsync(BorrowBookDTO dto);
+        Task<LoanResponseDTO> ReturnBookAsync(ReturnBookDTO dto);
+        Task<LoanResponseDTO> GetLoanByIdAsync(string loanId);
+        Task<IEnumerable<LoanResponseDTO>> GetAllLoansAsync();
+        Task<IEnumerable<LoanResponseDTO>> GetLoansByUserAsync(string userId);
+        Task<IEnumerable<LoanResponseDTO>> GetOverdueLoansAsync();
     }
 }

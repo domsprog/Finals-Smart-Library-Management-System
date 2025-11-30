@@ -1,4 +1,6 @@
-﻿namespace Smart_Library_Management_System_api.SmartLibrary.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Smart_Library_Management_System_api.SmartLibrary.Entities
 {
     public class Student : User
     {
@@ -16,6 +18,9 @@
             StudentId = studentId;
             Department = department;
         }
+
+     
+        protected Student() : base() { }
 
         public override int GetBorrowLimit() => 5;
         public override int GetBorrowCount() => 0;

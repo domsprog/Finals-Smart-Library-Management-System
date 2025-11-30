@@ -1,4 +1,6 @@
-﻿namespace Smart_Library_Management_System_api.SmartLibrary.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Smart_Library_Management_System_api.SmartLibrary.Entities
 {
     public class Faculty : User
     {
@@ -19,6 +21,9 @@
             Department = department;
             Position = position;
         }
+
+        // ADDED: Parameterless constructor for EF Core
+        protected Faculty() : base() { }
 
         public override int GetBorrowLimit() => 10;
         public override int GetBorrowCount() => 0;

@@ -1,58 +1,99 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Dto;
-using Smart_Library_Management_System_api.SmartLibrary.Entities;
+﻿using Smart_Library_Management_System_api.SmartLibrary.Entities;
 using Smart_Library_Management_System_api.SmartLibrary.Repository.Interface;
-using Smart_Library_Management_System_api.SmartLibrary.Services.Interface;
+using SmartLibrary.DTOs.StudentDTOs;
+using SmartLibrary.Services.Interfaces;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Implementation
+namespace SmartLibrary.Services.Implementation
 {
     public class StudentService : IStudentService
     {
-        private readonly IUserRepository _userRepo;
-        public StudentService(IUserRepository userRepo)
+        private readonly IStudentRepository _studentRepo;
+        public StudentService(IStudentRepository studentRepo) => _studentRepo = studentRepo;
+
+        public async Task<StudentResponseDTO> CreateStudentAsync(CreateStudentDTO dto)
         {
-            _userRepo = userRepo;
-        }
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            var userId = string.IsNullOrWhiteSpace(dto.UserId) ? Guid.NewGuid().ToString() : dto.UserId;
 
-        public async Task<Student> CreateStudentAsync(CreateStudentRequest request)
-        {
-            // generate UserId
-            var userId = Guid.NewGuid().ToString();
+            var student = new Student(userId, dto.Name, dto.Email, dto.StudentId, dto.Department);
+            await _studentRepo.AddStudent(student);
 
-            var student = new Student(userId, request.Name, request.Email, request.StudentId, request.Department);
-
-            // repository expected to add student (should persist type Student)
-            await _userRepo.AddStudent(student);
-            return student;
-        }
-
-        public async Task<Student> GetStudentByIdAsync(string userId)
-        {
-            return await _userRepo.GetStudentById(userId);
-        }
-
-        public async Task<List<Student>> GetAllStudentsAsync()
-        {
-            return await _userRepo.GetAllStudents();
-        }
-
-        public async Task<Student> UpdateStudentAsync(string userId, UpdateUserRequest request)
-        {
-            var existing = await _userRepo.GetStudentById(userId);
-            if (existing == null) return null;
-
-            if (!string.IsNullOrWhiteSpace(request.Name)) existing.Name = request.Name;
-            if (!string.IsNullOrWhiteSpace(request.Email)) existing.Email = request.Email;
-
-            await _userRepo.UpdateStudent(existing);
-            return existing;
+            return new StudentResponseDTO
+            {
+                UserId = student.UserId,
+                StudentId = student.StudentId,
+                Name = student.Name,
+                Email = student.Email,
+                Department = student.Department,
+                RegisteredDate = student.RegisteredDate 
+            };
         }
 
         public async Task<bool> DeleteStudentAsync(string userId)
         {
-            var existing = await _userRepo.GetStudentById(userId);
+            if (string.IsNullOrWhiteSpace(userId)) return false;
+            var existing = await _studentRepo.GetStudentById(userId);
             if (existing == null) return false;
-            await _userRepo.DeleteStudent(userId);
+            await _studentRepo.DeleteStudent(userId);
             return true;
+        }
+
+        public async Task<IEnumerable<StudentResponseDTO>> GetAllStudentsAsync()
+        {
+            var list = await _studentRepo.GetAllStudents();
+            return list.Select(s => new StudentResponseDTO
+            {
+                UserId = s.UserId,
+                StudentId = s.StudentId,
+                Name = s.Name,
+                Email = s.Email,
+                Department = s.Department,
+                RegisteredDate = s.RegisteredDate 
+            });
+        }
+
+        public async Task<StudentResponseDTO> GetStudentByIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId)) return null;
+            var s = await _studentRepo.GetStudentById(userId);
+            if (s == null) return null;
+            return new StudentResponseDTO
+            {
+                UserId = s.UserId,
+                StudentId = s.StudentId,
+                Name = s.Name,
+                Email = s.Email,
+                Department = s.Department,
+                RegisteredDate = s.RegisteredDate 
+            };
+        }
+
+        public async Task<StudentResponseDTO> UpdateStudentAsync(string userId, UpdateStudentDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("userId required");
+            var s = await _studentRepo.GetStudentById(userId);
+            if (s == null) return null;
+
+            if (!string.IsNullOrWhiteSpace(dto.Name))
+                s.Name = dto.Name;
+
+            if (!string.IsNullOrWhiteSpace(dto.Email)) 
+                s.Email = dto.Email;
+
+            if (!string.IsNullOrWhiteSpace(dto.Department))
+                s.Department = dto.Department;
+
+            await _studentRepo.UpdateStudent(s);
+
+            return new StudentResponseDTO
+            {
+                UserId = s.UserId,
+                StudentId = s.StudentId,
+                Name = s.Name,
+                Email = s.Email,
+                Department = s.Department,
+                RegisteredDate = s.RegisteredDate
+            };
         }
     }
 }

@@ -1,65 +1,126 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Dto;
-using Smart_Library_Management_System_api.SmartLibrary.Entities;
+﻿using Smart_Library_Management_System_api.SmartLibrary.Entities;
 using Smart_Library_Management_System_api.SmartLibrary.Repository.Interface;
-using Smart_Library_Management_System_api.SmartLibrary.Services.Interface;
+using SmartLibrary.DTOs.ReservationDTOs;
+using SmartLibrary.Services.Interfaces;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Implementation
+namespace SmartLibrary.Services.ReservationService
 {
     public class ReservationService : IReservationService
     {
+        private readonly IReservationRepository _resRepo;
         private readonly IBookRepository _bookRepo;
-        private readonly IReservationRepository _reservationRepo;
         private readonly IUserRepository _userRepo;
 
-        public ReservationService(IBookRepository bookRepo,
-            IReservationRepository reservationRepo,
-            IUserRepository userRepo)
+        public ReservationService(IReservationRepository resRepo, IBookRepository bookRepo, IUserRepository userRepo)
         {
+            _resRepo = resRepo;
             _bookRepo = bookRepo;
-            _reservationRepo = reservationRepo;
             _userRepo = userRepo;
         }
 
-        public async Task<Reservation> CreateReservation(CreateReservationRequest request)
+        public async Task<ReservationResponseDTO> CreateReservationAsync(CreateReservationDTO dto)
         {
-            var book = await _bookRepo.GetBookByISBN(request.ISBN);
-            if (book == null) throw new InvalidOperationException("Book not found.");
+            if (dto == null) throw new ArgumentNullException(nameof(dto));
+            var book = await _bookRepo.GetBookByISBN(dto.ISBN);
+            if (book == null) throw new InvalidOperationException("Book not found");
+            if (book.AvailableCopies > 0) throw new InvalidOperationException("Book is available; no reservation needed");
 
-            if (book.IsAvailable)
-                throw new InvalidOperationException("Book is available — no need to reserve.");
-
-            var user = await _userRepo.GetUserById(request.UserId);
-            if (user == null) throw new InvalidOperationException("User not found.");
-
-            // optional: check existing active reservation by the same user for the same book
-            var existing = await _reservationRepo.GetReservationByUserAndISBN(request.UserId, request.ISBN);
-            if (existing != null) throw new InvalidOperationException("You already have a reservation for this book.");
+            var user = await _userRepo.GetUserById(dto.UserId);
+            if (user == null) throw new InvalidOperationException("User not found");
 
             var reservation = new Reservation
             {
-                UserId = request.UserId,
-                BookId = request.ISBN,
-                ReservedAt = DateTime.UtcNow,
-                IsActive = true
+                ReservationId = Guid.NewGuid().ToString(),
+                UserId = dto.UserId,
+                ISBN = dto.ISBN,
+                ReservationDate = DateTime.UtcNow,
+                ExpiryDate = DateTime.UtcNow.AddDays(7), // 7 days to claim
+                IsActive = true,
+                IsFulfilled = false 
             };
 
-            await _reservationRepo.AddReservation(reservation);
-            return reservation;
+            await _resRepo.AddReservation(reservation);
+
+            return new ReservationResponseDTO
+            {
+                ReservationId = reservation.ReservationId,
+                UserId = reservation.UserId,
+                ISBN = reservation.ISBN,
+                ReservationDate = reservation.ReservationDate,
+                ExpiryDate = reservation.ExpiryDate, 
+                IsActive = reservation.IsActive, 
+                IsFulfilled = reservation.IsFulfilled 
+            };
         }
 
-        public async Task<bool> CancelReservation(int reservationId)
+        public async Task<bool> CancelReservationAsync(string reservationId)
         {
-            var reservation = await _reservationRepo.GetReservationById(reservationId);
-            if (reservation == null) return false;
+            if (string.IsNullOrWhiteSpace(reservationId)) return false;
+            return await _resRepo.CancelReservation(reservationId);
+        }
 
+        public async Task<IEnumerable<ReservationResponseDTO>> GetReservationsByUserAsync(string userId)
+        {
+            var list = await _resRepo.GetReservationsByUserId(userId);
+            return list.Select(r => new ReservationResponseDTO
+            {
+                ReservationId = r.ReservationId,
+                UserId = r.UserId,
+                ISBN = r.ISBN,
+                ReservationDate = r.ReservationDate,
+                ExpiryDate = r.ExpiryDate, 
+                IsActive = r.IsActive, 
+                IsFulfilled = r.IsFulfilled 
+            });
+        }
+
+       
+        public async Task<ReservationResponseDTO> GetReservationByIdAsync(string reservationId)
+        {
+            if (string.IsNullOrWhiteSpace(reservationId)) return null;
+            var r = await _resRepo.GetReservationById(reservationId);
+            if (r == null) return null;
+
+            return new ReservationResponseDTO
+            {
+                ReservationId = r.ReservationId,
+                UserId = r.UserId,
+                ISBN = r.ISBN,
+                ReservationDate = r.ReservationDate,
+                ExpiryDate = r.ExpiryDate,
+                IsActive = r.IsActive,
+                IsFulfilled = r.IsFulfilled
+            };
+        }
+
+        public async Task<IEnumerable<ReservationResponseDTO>> GetActiveReservationsAsync()
+        {
+            var list = await _resRepo.GetReservationsByUserId(string.Empty); // Get all
+            var active = list.Where(r => r.IsActive && !r.IsFulfilled);
+
+            return active.Select(r => new ReservationResponseDTO
+            {
+                ReservationId = r.ReservationId,
+                UserId = r.UserId,
+                ISBN = r.ISBN,
+                ReservationDate = r.ReservationDate,
+                ExpiryDate = r.ExpiryDate,
+                IsActive = r.IsActive,
+                IsFulfilled = r.IsFulfilled
+            });
+        }
+
+        public async Task<bool> FulfillReservationAsync(string reservationId)
+        {
+            if (string.IsNullOrWhiteSpace(reservationId)) return false;
+
+            var reservation = await _resRepo.GetReservationById(reservationId);
+            if (reservation == null || !reservation.IsActive) return false;
+
+            reservation.IsFulfilled = true;
             reservation.IsActive = false;
-            await _reservationRepo.UpdateReservation(reservation);
+            await _resRepo.UpdateReservation(reservation);
             return true;
-        }
-
-        public async Task<List<Reservation>> GetUserReservations(int userId)
-        {
-            return await _reservationRepo.GetReservationsByUserId(userId);
         }
     }
 }

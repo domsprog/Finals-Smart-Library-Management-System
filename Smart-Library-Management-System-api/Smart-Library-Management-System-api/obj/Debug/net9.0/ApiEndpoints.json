@@ -1,8 +1,8 @@
 [
   {
-    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.BookController",
-    "Method": "GetAllBooks",
-    "RelativePath": "api/Book",
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.BookController",
+    "Method": "GetAll",
+    "RelativePath": "api/books",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -10,25 +10,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.BookController",
-    "Method": "CreateBook",
-    "RelativePath": "api/Book",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "request",
-        "Type": "Smart_Library_Management_System_api.SmartLibrary.Dto.CreateBookRequest",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.BookController",
-    "Method": "GetBookByISBN",
-    "RelativePath": "api/Book/{isbn}",
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.BookController",
+    "Method": "Get",
+    "RelativePath": "api/books/{isbn}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -42,10 +26,10 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.BookController",
-    "Method": "UpdateBook",
-    "RelativePath": "api/Book/{isbn}",
-    "HttpMethod": "PUT",
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.BookController",
+    "Method": "CheckAvailability",
+    "RelativePath": "api/books/available/{isbn}",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
@@ -53,19 +37,30 @@
         "Name": "isbn",
         "Type": "System.String",
         "IsRequired": true
-      },
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.BookController",
+    "Method": "Create",
+    "RelativePath": "api/books/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
-        "Name": "request",
-        "Type": "Smart_Library_Management_System_api.SmartLibrary.Dto.UpdateBookRequest",
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.BookDTOs.CreateBookDTO",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.BookController",
-    "Method": "DeleteBook",
-    "RelativePath": "api/Book/{isbn}",
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.BookController",
+    "Method": "Delete",
+    "RelativePath": "api/books/delete/{isbn}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -79,15 +74,15 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.BookController",
-    "Method": "IsBookAvailable",
-    "RelativePath": "api/Book/{isbn}/available",
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.BookController",
+    "Method": "Search",
+    "RelativePath": "api/books/search/{searchTerm}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "isbn",
+        "Name": "searchTerm",
         "Type": "System.String",
         "IsRequired": true
       }
@@ -95,17 +90,497 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.BookController",
-    "Method": "SearchBooks",
-    "RelativePath": "api/Book/search",
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.BookController",
+    "Method": "Update",
+    "RelativePath": "api/books/update/{isbn}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "isbn",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.BookDTOs.UpdateBookDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.CatalogController",
+    "Method": "GetAllCatalogs",
+    "RelativePath": "api/Catalog",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.CatalogController",
+    "Method": "CreateCatalog",
+    "RelativePath": "api/Catalog",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.CatalogDTOs.CreateCatalogDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.CatalogController",
+    "Method": "GetCatalogById",
+    "RelativePath": "api/Catalog/{catalogId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "term",
+        "Name": "catalogId",
         "Type": "System.String",
-        "IsRequired": false
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.CatalogController",
+    "Method": "UpdateCatalog",
+    "RelativePath": "api/Catalog/{catalogId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "catalogId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.CatalogDTOs.UpdateCatalogDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.CatalogController",
+    "Method": "DeleteCatalog",
+    "RelativePath": "api/Catalog/{catalogId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "catalogId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.FineController",
+    "Method": "AddFine",
+    "RelativePath": "api/Fine",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.FineDTOs.CreateFineDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.FineController",
+    "Method": "GetAllFinesAsync",
+    "RelativePath": "api/Fine",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.FineController",
+    "Method": "GetFineByIdAsync",
+    "RelativePath": "api/Fine/{fineId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fineId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.FineController",
+    "Method": "UpdateFine",
+    "RelativePath": "api/Fine/{fineId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fineId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.FineDTOs.UpdateFineDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.FineController",
+    "Method": "CreateFineAsync",
+    "RelativePath": "api/Fine/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.FineDTOs.CreateFineDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.FineController",
+    "Method": "GetFineByLoan",
+    "RelativePath": "api/Fine/loan/{loanId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loanId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.FineController",
+    "Method": "PayFineAsync",
+    "RelativePath": "api/Fine/pay/{fineId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fineId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.FineController",
+    "Method": "GetFinesByUser",
+    "RelativePath": "api/Fine/user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.LoansController",
+    "Method": "GetAllLoans",
+    "RelativePath": "api/Loans",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.LoansController",
+    "Method": "GetLoan",
+    "RelativePath": "api/Loans/{loanId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loanId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.LoansController",
+    "Method": "BorrowBook",
+    "RelativePath": "api/Loans/borrow",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.LoanDTOs.BorrowBookDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.LoansController",
+    "Method": "GetOverdueLoans",
+    "RelativePath": "api/Loans/overdue",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.LoansController",
+    "Method": "ReturnBook",
+    "RelativePath": "api/Loans/return",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.LoanDTOs.ReturnBookDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.LoansController",
+    "Method": "GetLoansByUser",
+    "RelativePath": "api/Loans/user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.ReservationsController",
+    "Method": "CreateReservation",
+    "RelativePath": "api/Reservations",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.ReservationDTOs.CreateReservationDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.ReservationsController",
+    "Method": "GetReservationById",
+    "RelativePath": "api/Reservations/{reservationId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reservationId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.ReservationsController",
+    "Method": "GetActiveReservations",
+    "RelativePath": "api/Reservations/active",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.ReservationsController",
+    "Method": "CancelReservation",
+    "RelativePath": "api/Reservations/cancel/{reservationId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reservationId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.ReservationsController",
+    "Method": "FulfillReservation",
+    "RelativePath": "api/Reservations/fulfill/{reservationId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "reservationId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.Controllers.ReservationsController",
+    "Method": "GetReservationsByUser",
+    "RelativePath": "api/Reservations/user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.UserController",
+    "Method": "GetUsers",
+    "RelativePath": "api/User",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.UserController",
+    "Method": "GetUser",
+    "RelativePath": "api/User/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.UserController",
+    "Method": "UpdateUser",
+    "RelativePath": "api/User/{userId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.UserDTOs.UpdateUserDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.UserController",
+    "Method": "DeleteUser",
+    "RelativePath": "api/User/{userId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.UserController",
+    "Method": "RegisterFaculty",
+    "RelativePath": "api/User/faculty",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.FacultyDTOs.CreateFacultyDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Smart_Library_Management_System_api.SmartLibrary.Controllers.UserController",
+    "Method": "RegisterStudent",
+    "RelativePath": "api/User/student",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SmartLibrary.DTOs.StudentDTOs.CreateStudentDTO",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

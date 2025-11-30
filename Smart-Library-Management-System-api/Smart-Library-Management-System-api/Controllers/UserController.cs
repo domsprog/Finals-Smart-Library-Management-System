@@ -1,37 +1,88 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Smart_Library_Management_System_api.SmartLibrary.Services.Interface;
+using SmartLibrary.DTOs.StudentDTOs;
+using SmartLibrary.DTOs.FacultyDTOs;
+using SmartLibrary.DTOs.UserDTOs;
 
-namespace Smart_Library_Management_System_api.Controllers
+namespace Smart_Library_Management_System_api.SmartLibrary.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("mvc/api/[controller]")]
-    public class UsersController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        public UsersController(IUserService userService)
+
+        public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> Get(string userId)
+        [HttpGet]
+        public async Task<IActionResult> GetUsers()
         {
-            var user = await _userService.GetUserByIdAsync(userId);
-            return user == null ? NotFound() : Ok(user);
+            var users = await _userService.GetAllUsers();
+            return Ok(users);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUser(string id)
         {
-            var list = await _userService.GetAllUsersAsync();
-            return Ok(list);
+            var user = await _userService.GetUserById(id);
+            if (user == null) return NotFound($"User {id} not found.");
+            return Ok(user);
+        }
+
+        [HttpPost("student")]
+        public async Task<IActionResult> RegisterStudent([FromBody] CreateStudentDTO dto)
+        {
+            try
+            {
+                var user = await _userService.RegisterStudent(dto);
+                return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("faculty")]
+        public async Task<IActionResult> RegisterFaculty([FromBody] CreateFacultyDTO dto)
+        {
+            try
+            {
+                var user = await _userService.RegisterFaculty(dto);
+                return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUser(string userId, [FromBody] UpdateUserDTO dto)
+        {
+            try
+            {
+                var updated = await _userService.UpdateUser(userId, dto);
+                if (updated == null)
+                    return NotFound($"User {userId} not found.");
+                return Ok(updated);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> Delete(string userId)
+        public async Task<IActionResult> DeleteUser(string userId)
         {
-            var deleted = await _userService.DeleteUserAsync(userId);
-            return deleted ? NoContent() : NotFound();
+            var result = await _userService.DeleteUser(userId);
+            if (!result)
+                return NotFound($"User {userId} not found.");
+            return Ok("User deleted successfully");
         }
     }
 }

@@ -1,15 +1,15 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Dto;
-using Smart_Library_Management_System_api.SmartLibrary.Entities;
+﻿using SmartLibrary.DTOs.BookDTOs;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Interface
+namespace SmartLibrary.Services.Interfaces
 {
     public interface IBookService
     {
-        Task<Book> CreateBook(CreateBookRequest request);
-        Task<Book> UpdateBook(string isbn, UpdateBookRequest request);
+        Task<BookResponseDTO> CreateBook(CreateBookDTO dto);
+        Task<BookResponseDTO> UpdateBook(string isbn, UpdateBookDTO dto);
         Task<bool> DeleteBook(string isbn);
-        Task<Book> GetBookByISBN(string isbn);
-        Task<List<Book>> GetAllBooks();
-        Task<List<Book>> SearchBooks(string keyword);
+        Task<BookResponseDTO> GetBookByISBN(string isbn);
+        Task<IEnumerable<BookResponseDTO>> GetAllBooks();
+        Task<IEnumerable<BookResponseDTO>> SearchBooks(string searchTerm);
+        Task<bool> IsBookAvailable(string isbn);
     }
 }

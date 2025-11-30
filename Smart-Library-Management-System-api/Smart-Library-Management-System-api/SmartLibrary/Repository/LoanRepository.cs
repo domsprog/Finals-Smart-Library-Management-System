@@ -1,67 +1,37 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Repository.Interface;
-using Smart_Library_Management_System_api.SmartLibrary.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Smart_Library_Management_System_api.SmartLibrary.Data;
+using Smart_Library_Management_System_api.SmartLibrary.Entities;
+using Smart_Library_Management_System_api.SmartLibrary.Repository.Interface;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Repository
+namespace Smart_Library_Management_System_api.SmartLibrary.Repository.Implementation
 {
     public class LoanRepository : ILoanRepository
     {
-        private readonly DbContextLibrary _context;
-        //Constructor Injection of the DbContext
-        public LoanRepository(DbContextLibrary context)
-        {
-            _context = context;
-        }
-        // Implement methods defined in ILoanRepository interface here
-        // For example:
-       public async Task<Loan> GetLoanById(string loanId)
-        {
-            return await _context.Loans.FindAsync(loanId);
-        }
-        public async Task<List<Loan>> GetLoansByUserId(string userId)
-        {
-            return await _context.Loans
-                .Where(loan => loan.UserId == userId)
-                .ToListAsync();
-        }
-        public async Task<List<Loan>> GetActiveLoans(string userId)
-        {
-            return await _context.Loans
-                .Where(loan => loan.UserId == userId && loan.ReturnDate == null)
-                .ToListAsync();
-        }
-        public async Task<List<Loan>> GetOverdueLoans()
-        {
-            var today = DateTime.UtcNow;
-            return await _context.Loans
-                .Where(loan => loan.DueDate < today && loan.ReturnDate == null)
-                .ToListAsync();
-        }
+        private readonly DbContextLibrary _ctx;
+        public LoanRepository(DbContextLibrary ctx) => _ctx = ctx;
+
         public async Task AddLoan(Loan loan)
         {
-            await _context.Loans.AddAsync(loan);
-            await _context.SaveChangesAsync();
+            await _ctx.Loans.AddAsync(loan);
+            await _ctx.SaveChangesAsync();
         }
+
+        public async Task<Loan> GetLoanById(string loanId) =>
+            await _ctx.Loans.FirstOrDefaultAsync(l => l.LoanId == loanId);
+
+        public async Task<List<Loan>> GetLoansByUserId(string userId) =>
+            await _ctx.Loans.Where(l => l.UserId == userId).ToListAsync();
+
+        public async Task<int> GetActiveLoanCountByUser(string userId) =>
+            await _ctx.Loans.CountAsync(l => l.UserId == userId && l.ReturnDate == null);
+
+        public async Task<List<Loan>> GetAllActiveLoans() =>
+            await _ctx.Loans.Where(l => l.ReturnDate == null).ToListAsync();
+
         public async Task UpdateLoan(Loan loan)
         {
-            _context.Loans.Update(loan);
-            await _context.SaveChangesAsync();
-        }
-        public async Task<int> CountActiveLoans(string userId)
-        {
-            return await _context.Loans
-                .CountAsync(loan => loan.UserId == userId && loan.ReturnDate == null);
-        }
-
-        public Task<Loan> GetLoanById(int loanId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Loan>> GetLoansByUserId(int userId)
-        {
-            throw new NotImplementedException();
+            _ctx.Loans.Update(loan);
+            await _ctx.SaveChangesAsync();
         }
     }
 }

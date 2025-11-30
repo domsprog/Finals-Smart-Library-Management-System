@@ -7,97 +7,135 @@ namespace Smart_Library_Management_System_api.SmartLibrary.Repository.Implementa
 {
     public class UserRepository : IUserRepository
     {
-        private readonly DbContextLibrary _context;
-        public UserRepository(DbContextLibrary context)
+        private readonly DbContextLibrary _ctx;
+        public UserRepository(DbContextLibrary ctx) => _ctx = ctx;
+
+        public async Task AddUser(User user)
         {
-            _context = context;
+        
+            switch (user)
+            {
+                case Student s:
+                    await _ctx.Students.AddAsync(s);
+                    break;
+                case Faculty f:
+                    await _ctx.Faculties.AddAsync(f);
+                    break;
+                default:
+                   
+                    throw new InvalidOperationException("Cannot add abstract User. Use Student or Faculty.");
+            }
+            await _ctx.SaveChangesAsync();
         }
 
-        // ================== USER ==================
+        public async Task UpdateUser(User user)
+        {
+            switch (user)
+            {
+                case Student s:
+                    _ctx.Students.Update(s);
+                    break;
+                case Faculty f:
+                    _ctx.Faculties.Update(f);
+                    break;
+            }
+            await _ctx.SaveChangesAsync();
+        }
+
+     
         public async Task<User> GetUserById(string userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            // Try to find in Students first
+            var student = await _ctx.Students.FirstOrDefaultAsync(s => s.UserId == userId);
+            if (student != null) return student;
+
+            // Try to find in Faculty
+            var faculty = await _ctx.Faculties.FirstOrDefaultAsync(f => f.UserId == userId);
+            return faculty;
         }
 
         public async Task<List<User>> GetAllUsers()
         {
-            return await _context.Users.ToListAsync();
+            var students = await _ctx.Students.AsNoTracking().ToListAsync();
+            var faculties = await _ctx.Faculties.AsNoTracking().ToListAsync();
+
+            var allUsers = new List<User>();
+            allUsers.AddRange(students);
+            allUsers.AddRange(faculties);
+            return allUsers;
         }
 
         public async Task DeleteUser(string userId)
         {
             var user = await GetUserById(userId);
-            if (user != null)
+            if (user == null) return;
+
+            switch (user)
             {
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
+                case Student s:
+                    _ctx.Students.Remove(s);
+                    break;
+                case Faculty f:
+                    _ctx.Faculties.Remove(f);
+                    break;
             }
+            await _ctx.SaveChangesAsync();
         }
 
-        // ================== STUDENT ==================
-        public async Task AddStudent(Student s)
+        // Faculty-specific methods
+        public async Task AddFaculty(Faculty faculty)
         {
-            await _context.Students.AddAsync(s);
-            await _context.SaveChangesAsync();
+           
+            await _ctx.Faculties.AddAsync(faculty);
+            await _ctx.SaveChangesAsync();
         }
 
-        public async Task<Student> GetStudentById(string userId)
-        {
-            return await _context.Students.FirstOrDefaultAsync(s => s.UserId == userId);
-        }
+        public async Task<Faculty> GetFacultyById(string userId) =>
+            await _ctx.Faculties.FirstOrDefaultAsync(f => f.UserId == userId);
 
-        public async Task<List<Student>> GetAllStudents()
-        {
-            return await _context.Students.ToListAsync();
-        }
+        public async Task<List<Faculty>> GetAllFaculty() =>
+            await _ctx.Faculties.AsNoTracking().ToListAsync();
 
-        public async Task UpdateStudent(Student s)
+        public async Task UpdateFaculty(Faculty existing)
         {
-            _context.Students.Update(s);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteStudent(string userId)
-        {
-            var student = await GetStudentById(userId);
-            if (student != null)
-            {
-                _context.Students.Remove(student);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        // ================== FACULTY ==================
-        public async Task AddFaculty(Faculty f)
-        {
-            await _context.Faculties.AddAsync(f);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<Faculty> GetFacultyById(string userId)
-        {
-            return await _context.Faculties.FirstOrDefaultAsync(f => f.UserId == userId);
-        }
-
-        public async Task<List<Faculty>> GetAllFaculty()
-        {
-            return await _context.Faculties.ToListAsync();
-        }
-
-        public async Task UpdateFaculty(Faculty f)
-        {
-            _context.Faculties.Update(f);
-            await _context.SaveChangesAsync();
+            _ctx.Faculties.Update(existing);
+            await _ctx.SaveChangesAsync();
         }
 
         public async Task DeleteFaculty(string userId)
         {
-            var faculty = await GetFacultyById(userId);
-            if (faculty != null)
-            {
-                _context.Faculties.Remove(faculty);
-                await _context.SaveChangesAsync();
-            }
+            var f = await GetFacultyById(userId);
+            if (f == null) return;
+            _ctx.Faculties.Remove(f);
+            await _ctx.SaveChangesAsync();
+        }
+
+        // Student-specific methods
+        public async Task AddStudent(Student student)
+        {
+           
+            await _ctx.Students.AddAsync(student);
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task<Student> GetStudentById(string userId) =>
+            await _ctx.Students.FirstOrDefaultAsync(s => s.UserId == userId);
+
+        public async Task<List<Student>> GetAllStudents() =>
+            await _ctx.Students.AsNoTracking().ToListAsync();
+
+        public async Task UpdateStudent(Student existing)
+        {
+            _ctx.Students.Update(existing);
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task DeleteStudent(string userId)
+        {
+            var s = await GetStudentById(userId);
+            if (s == null) return;
+            _ctx.Students.Remove(s);
+            await _ctx.SaveChangesAsync();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Smart_Library_Management_System_api.SmartLibrary.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Smart_Library_Management_System_api.SmartLibrary.Entities
 {
     public class Book
     {
@@ -6,6 +8,7 @@
         private string _title;
         private decimal _price;
 
+        [Key]
         public string ISBN
         {
             get => _isbn;
@@ -34,5 +37,4 @@
 
         public bool IsAvailable => AvailableCopies > 0;
     }
-
 }

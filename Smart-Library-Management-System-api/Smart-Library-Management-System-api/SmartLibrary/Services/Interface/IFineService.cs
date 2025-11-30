@@ -1,11 +1,19 @@
-﻿using Smart_Library_Management_System_api.SmartLibrary.Entities;
+﻿using SmartLibrary.DTOs.FineDTOs;
 
-namespace Smart_Library_Management_System_api.SmartLibrary.Services.Interface
+namespace SmartLibrary.Services.Interfaces
 {
     public interface IFineService
     {
-        Task<Fine> CreateFine(int loanId, decimal amount);
-        Task<List<Fine>> GetUserFines(int userId);
-        Task<decimal> CalculateFine(DateTime dueDate, DateTime returnedDate);
+        // FIXED: Changed from returning raw entity to DTO
+        Task<FineResponseDTO> AddFine(CreateFineDTO dto);
+
+        Task<FineResponseDTO> CreateFineAsync(CreateFineDTO dto);
+        Task<FineResponseDTO> UpdateFineAsync(string fineId, UpdateFineDTO dto);
+        Task<bool> PayFineAsync(string fineId);
+        Task<FineResponseDTO> GetFineByIdAsync(string fineId);
+        Task<IEnumerable<FineResponseDTO>> GetAllFinesAsync();
+        Task<IEnumerable<FineResponseDTO>> GetFinesByUserAsync(string userId);
+        Task<decimal> CalculateFine(DateTime dueDate, DateTime returnDate);
+        Task<FineResponseDTO> GetFineByLoanIdAsync(string loanId);
     }
 }
