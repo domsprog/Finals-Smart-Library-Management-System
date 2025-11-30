@@ -18,22 +18,22 @@ namespace SmartLibrary.Services.CatalogService
 
             var c = new Catalog
             {
-                CatalogId = dto.CatalogId ?? Guid.NewGuid().ToString(), // FIXED
+                CatalogId = dto.CatalogId ?? Guid.NewGuid().ToString(), 
                 Category = dto.Category,
-                Name = dto.Name, // ADDED
-                Description = dto.Description, // ADDED
-                BookISBNs = dto.BookISBNs ?? new List<string>() // ADDED
+                Name = dto.Name, 
+                Description = dto.Description, 
+                BookISBNs = dto.BookISBNs ?? new List<string>() 
             };
 
             var added = await _catalogRepo.AddCatalog(c);
             return new CatalogResponseDTO
             {
-                Id = added.Id, // ADDED
-                CatalogId = added.CatalogId, // FIXED
+                Id = added.Id, 
+                CatalogId = added.CatalogId, 
                 Category = added.Category,
-                Name = added.Name, // ADDED
-                Description = added.Description, // ADDED
-                BookISBNs = added.BookISBNs // ADDED
+                Name = added.Name, 
+                Description = added.Description, 
+                BookISBNs = added.BookISBNs 
             };
         }
 
@@ -42,16 +42,16 @@ namespace SmartLibrary.Services.CatalogService
             var list = await _catalogRepo.GetAllCatalogs();
             return list.Select(c => new CatalogResponseDTO
             {
-                Id = c.Id, // ADDED
-                CatalogId = c.CatalogId, // FIXED
+                Id = c.Id, 
+                CatalogId = c.CatalogId, 
                 Category = c.Category,
-                Name = c.Name, // ADDED
-                Description = c.Description, // ADDED
-                BookISBNs = c.BookISBNs // ADDED
+                Name = c.Name, 
+                Description = c.Description, 
+                BookISBNs = c.BookISBNs 
             });
         }
 
-        // ADDED: Missing interface methods
+
         public async Task<CatalogResponseDTO> GetCatalogByIdAsync(string catalogId)
         {
             if (string.IsNullOrWhiteSpace(catalogId)) return null;

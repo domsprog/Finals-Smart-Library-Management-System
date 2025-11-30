@@ -38,7 +38,8 @@ namespace Smart_Library_Management_System_api.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
@@ -48,7 +49,8 @@ namespace Smart_Library_Management_System_api.Migrations
 
                     b.Property<string>("Publisher")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -74,6 +76,30 @@ namespace Smart_Library_Management_System_api.Migrations
                             Publisher = "Julia Kong",
                             Title = "Effective of Java-rice",
                             TotalCopies = 5
+                        },
+                        new
+                        {
+                            ISBN = "978-0135166307",
+                            Author = "Robert C. Martin",
+                            AvailableCopies = 3,
+                            Category = "Programming",
+                            Price = 1499.00m,
+                            PublicationYear = 2008,
+                            Publisher = "Prentice Hall",
+                            Title = "Clean Code",
+                            TotalCopies = 3
+                        },
+                        new
+                        {
+                            ISBN = "978-0132350884",
+                            Author = "Robert C. Martin",
+                            AvailableCopies = 4,
+                            Category = "Software Engineering",
+                            Price = 1599.00m,
+                            PublicationYear = 2017,
+                            Publisher = "Prentice Hall",
+                            Title = "Clean Architecture",
+                            TotalCopies = 4
                         });
                 });
 
@@ -85,27 +111,34 @@ namespace Smart_Library_Management_System_api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.PrimitiveCollection<string>("BookISBNs")
+                    b.Property<string>("BookISBNs")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CatalogId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CatalogId")
+                        .IsUnique();
 
                     b.ToTable("Catalogs");
                 });
@@ -113,7 +146,8 @@ namespace Smart_Library_Management_System_api.Migrations
             modelBuilder.Entity("Smart_Library_Management_System_api.SmartLibrary.Entities.Fine", b =>
                 {
                     b.Property<string>("FineId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(10,2)");
@@ -121,28 +155,37 @@ namespace Smart_Library_Management_System_api.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsPaid")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("IssuedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("LoanId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("PaidDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("FineId");
+
+                    b.HasIndex("IsPaid");
+
+                    b.HasIndex("LoanId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Fines");
                 });
@@ -150,7 +193,8 @@ namespace Smart_Library_Management_System_api.Migrations
             modelBuilder.Entity("Smart_Library_Management_System_api.SmartLibrary.Entities.Loan", b =>
                 {
                     b.Property<string>("LoanId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("BorrowDate")
                         .HasColumnType("datetime2");
@@ -163,16 +207,24 @@ namespace Smart_Library_Management_System_api.Migrations
 
                     b.Property<string>("ISBN")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("LoanId");
+
+                    b.HasIndex("ISBN");
+
+                    b.HasIndex("ReturnDate");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Loans");
                 });
@@ -180,14 +232,16 @@ namespace Smart_Library_Management_System_api.Migrations
             modelBuilder.Entity("Smart_Library_Management_System_api.SmartLibrary.Entities.Reservation", b =>
                 {
                     b.Property<string>("ReservationId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ISBN")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -198,14 +252,18 @@ namespace Smart_Library_Management_System_api.Migrations
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("ReservedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("ReservationId");
+
+                    b.HasIndex("ISBN");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
                 });
@@ -213,15 +271,18 @@ namespace Smart_Library_Management_System_api.Migrations
             modelBuilder.Entity("Smart_Library_Management_System_api.SmartLibrary.Entities.User", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("RegisteredDate")
                         .HasColumnType("datetime2");
@@ -232,6 +293,9 @@ namespace Smart_Library_Management_System_api.Migrations
                         .HasColumnType("nvarchar(8)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
 
@@ -246,15 +310,18 @@ namespace Smart_Library_Management_System_api.Migrations
 
                     b.Property<string>("Department")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("FacultyId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Position")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.ToTable("Users", t =>
                         {
@@ -263,6 +330,19 @@ namespace Smart_Library_Management_System_api.Migrations
                         });
 
                     b.HasDiscriminator().HasValue("Faculty");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "FAC001",
+                            Email = "alice.johnson@university.edu",
+                            Name = "Dr. Alice Johnson",
+                            RegisteredDate = new DateTime(2023, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserType = "Faculty",
+                            Department = "Computer Science",
+                            FacultyId = "FAC-2020-001",
+                            Position = "Professor"
+                        });
                 });
 
             modelBuilder.Entity("Smart_Library_Management_System_api.SmartLibrary.Entities.Student", b =>
@@ -271,13 +351,37 @@ namespace Smart_Library_Management_System_api.Migrations
 
                     b.Property<string>("Department")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("StudentId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasDiscriminator().HasValue("Student");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "STU001",
+                            Email = "john.doe@university.edu",
+                            Name = "John Doe",
+                            RegisteredDate = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserType = "Student",
+                            Department = "Computer Science",
+                            StudentId = "2024-001"
+                        },
+                        new
+                        {
+                            UserId = "STU002",
+                            Email = "jane.smith@university.edu",
+                            Name = "Jane Smith",
+                            RegisteredDate = new DateTime(2024, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            UserType = "Student",
+                            Department = "Information Technology",
+                            StudentId = "2024-002"
+                        });
                 });
 #pragma warning restore 612, 618
         }

@@ -9,5 +9,7 @@ namespace SmartLibrary.Services.Interfaces
         Task<bool> DeleteBook(string isbn);
         Task<BookResponseDTO> GetBookByISBN(string isbn);
         Task<IEnumerable<BookResponseDTO>> GetAllBooks();
+        Task<IEnumerable<BookResponseDTO>> SearchBooks(string searchTerm);
+        Task<bool> IsBookAvailable(string isbn);
     }
 }

@@ -18,8 +18,15 @@ namespace Smart_Library_Management_System_api.Controllers
         [HttpPost("borrow")]
         public async Task<IActionResult> BorrowBook([FromBody] BorrowBookDTO dto)
         {
-            var result = await _loanService.BorrowBookAsync(dto);
-            return Ok(result);
+            try
+            {
+                var result = await _loanService.BorrowBookAsync(dto);
+                return CreatedAtAction(nameof(GetLoan), new { loanId = result.LoanId }, result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{loanId}")]
@@ -37,11 +44,34 @@ namespace Smart_Library_Management_System_api.Controllers
             return Ok(result);
         }
 
+        // ADDED: Get loans by user
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetLoansByUser(string userId)
+        {
+            var loans = await _loanService.GetLoansByUserAsync(userId);
+            return Ok(loans);
+        }
+
+        // ADDED: Get overdue loans
+        [HttpGet("overdue")]
+        public async Task<IActionResult> GetOverdueLoans()
+        {
+            var loans = await _loanService.GetOverdueLoansAsync();
+            return Ok(loans);
+        }
+
         [HttpPost("return")]
         public async Task<IActionResult> ReturnBook([FromBody] ReturnBookDTO dto)
         {
-            var result = await _loanService.ReturnBookAsync(dto);
-            return Ok(result);
+            try
+            {
+                var result = await _loanService.ReturnBookAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

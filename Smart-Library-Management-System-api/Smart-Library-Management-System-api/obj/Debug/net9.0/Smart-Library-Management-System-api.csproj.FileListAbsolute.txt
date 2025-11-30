@@ -150,10 +150,10 @@ C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Libra
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\staticwebassets.development.json
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\staticwebassets.build.endpoints.json
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\swae.build.ex.cache
+C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\Smart-Li.71CF20FF.Up2Date
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\Smart-Library-Management-System-api.dll
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\refint\Smart-Library-Management-System-api.dll
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\Smart-Library-Management-System-api.pdb
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\Smart-Library-Management-System-api.genruntimeconfig.cache
 C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\ref\Smart-Library-Management-System-api.dll
-C:\Users\dominic\source\repos\Finals-Smart-Library-Management-System\Smart-Library-Management-System-api\Smart-Library-Management-System-api\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

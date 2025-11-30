@@ -149,7 +149,7 @@ namespace Smart_Library_Management_System_api.SmartLibrary.Data
                 {
                     ISBN = "978-0135166307",
                     Title = "Clean Code",
-                    Author = "Martin Aranzado",
+                    Author = "Robert C. Martin",
                     PublicationYear = 2008,
                     Publisher = "Prentice Hall",
                     Category = "Programming",
@@ -161,7 +161,7 @@ namespace Smart_Library_Management_System_api.SmartLibrary.Data
                 {
                     ISBN = "978-0132350884",
                     Title = "Clean Architecture",
-                    Author = "Roberto jack",
+                    Author = "Robert C. Martin",
                     PublicationYear = 2017,
                     Publisher = "Prentice Hall",
                     Category = "Software Engineering",
@@ -171,14 +171,14 @@ namespace Smart_Library_Management_System_api.SmartLibrary.Data
                 }
             );
 
-            // Seed sample students
+          
             modelBuilder.Entity<Student>().HasData(
                 new
                 {
                     UserId = "STU001",
                     Name = "John Doe",
                     Email = "john.doe@university.edu",
-                    RegisteredDate = DateTime.Now,
+                    RegisteredDate = new DateTime(2024, 1, 15), 
                     StudentId = "2024-001",
                     Department = "Computer Science",
                     UserType = "Student"
@@ -186,23 +186,23 @@ namespace Smart_Library_Management_System_api.SmartLibrary.Data
                 new
                 {
                     UserId = "STU002",
-                    Name = "Jakee Sucgang",
+                    Name = "Jane Smith",
                     Email = "jane.smith@university.edu",
-                    RegisteredDate = DateTime.Now,
+                    RegisteredDate = new DateTime(2024, 1, 20), 
                     StudentId = "2024-002",
                     Department = "Information Technology",
                     UserType = "Student"
                 }
             );
 
-            // Seed sample faculty
+            // Seed sample faculty - FIXED: Using static date
             modelBuilder.Entity<Faculty>().HasData(
                 new
                 {
                     UserId = "FAC001",
                     Name = "Dr. Alice Johnson",
                     Email = "alice.johnson@university.edu",
-                    RegisteredDate = DateTime.Now,
+                    RegisteredDate = new DateTime(2023, 9, 1),
                     FacultyId = "FAC-2020-001",
                     Department = "Computer Science",
                     Position = "Professor",
